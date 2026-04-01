@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+db_init.json
+db_init.py
+.DS_Store
+jesc1an.pdf
