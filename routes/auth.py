@@ -31,21 +31,53 @@ def login(data: LoginRequest):
     conn = get_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("SELECT id, username, hashed_password, company, role FROM users WHERE email = %s", (data.email,))
+        cursor.execute("SELECT id, username, hashed_password, company, role, status FROM users WHERE email = %s", (data.email,))
         user = cursor.fetchone()
         if not user or not verify_password(data.password, user["hashed_password"]):
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
+                status_code= status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid username or password",
                 headers={"WWW-Authenticate": "Bearer"},
             )
         username = user['username']
         company = user['company']
         role = user['role']
+        user_status = user['status']
         token = create_access_token({"sub": user["username"], "user_id": user["id"], "company": company, "role": role})
-        return {"access_token": token, "token_type": "bearer","username": username,"company":company,"role":role}
+        return {"access_token": token, "token_type": "bearer","username": username,"company":company,"role":role, "status": user_status}
     finally:
         cursor.close()
         conn.close()
 
+
+@router.post("/signup-request/{id}/approve")
+def approve_user(id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE users SET status = 'APPROVED' WHERE id = %s RETURNING id, username, email, created_at", (id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        conn.commit()
+        return dict(user)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+@router.post("/signup-request/{id}/reject")
+def approve_user(id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE users SET status = 'REJECTED' WHERE id = %s RETURNING id, username, email, created_at", (id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        conn.commit()
+        return dict(user)
+    finally:
+        cursor.close()
+        conn.close()
 

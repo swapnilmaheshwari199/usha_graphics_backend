@@ -1,23 +1,26 @@
 from fastapi import APIRouter, HTTPException, Depends
-from schema.models import UserResponse
+# from schema.models import UserResponse
 from services.database import get_connection
 from utils.auth import get_current_user
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/fetch-all-users")
 def get_current_user_profile(current_user: dict = Depends(get_current_user)):
     conn = get_connection()
     cursor = conn.cursor()
+    role = current_user.get("role")
+    if role != "admin":
+        raise HTTPException(status_code=403, detail="Access forbidden: Admins only")
     try:
         cursor.execute(
-            "SELECT id, username, email, created_at FROM users WHERE id = %s",
-            (current_user["user_id"],)
+            "SELECT * FROM users where role = 'customer'",
         )
-        user = cursor.fetchone()
+        user = cursor.fetchall()
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
-        return dict(user)
+        return [dict(row) for row in user]
     finally:
         cursor.close()
         conn.close()
+

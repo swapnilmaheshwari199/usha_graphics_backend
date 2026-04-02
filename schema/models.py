@@ -12,6 +12,7 @@ class TokenResponse(BaseModel):
     username: str
     company: str
     role: str
+    status: str
 
 class RegisterRequest(BaseModel):
     username: str
