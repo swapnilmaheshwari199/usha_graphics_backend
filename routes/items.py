@@ -9,7 +9,7 @@ from typing import List
 import json
 
 s3_service = s3Service()
-router = APIRouter(prefix="/items", tags=["Items"])
+router = APIRouter(prefix="/items", tags=["Items and Orders Details"])
 
 
 @router.post("/fetch-labels",response_model= LabelResponse,status_code=200)

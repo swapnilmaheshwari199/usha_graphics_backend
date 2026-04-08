@@ -11,8 +11,8 @@ from routes.users import router as users_router
 from routes.items import router as items_router
 
 app = FastAPI(
-    title="FastAPI Backend",
-    description="A FastAPI backend with JWT authentication and Neon PostgreSQL",
+    title="Usha Graphics Backend API",
+    description="A FastAPI backend for user authentication, item management, and order processing",
     version="1.0.0",
 )
 

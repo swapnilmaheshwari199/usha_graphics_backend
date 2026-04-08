@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from services.database import get_connection
 from utils.auth import get_current_user
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["Users Details"])
 
 @router.get("/fetch-all-users")
 def get_current_user_profile(current_user: dict = Depends(get_current_user)):
